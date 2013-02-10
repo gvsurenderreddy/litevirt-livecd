@@ -1,0 +1,55 @@
+#!/bin/sh
+
+usage() {
+    echo "Usage: litevirt-creator [OPTION]..."
+    echo "Create a litevirt hypervisor livecd"
+    echo ""
+    echo "-c    kickstart config file tied to this livecd"
+    echo "-x    drop to the shell before quitting"
+    echo "-d    cache dir, default is \$CWD/cache"
+
+    exit
+}
+
+if [ ! -f /bin/livecd-creator ]; then
+    echo "livecd-tools is missing; try \"yum install -y livecd-tools\" to install it."
+    exit -1
+fi 
+
+if [ ! -f /bin/image-minimizer ]; then
+    echo "appliance-tools-minimizer is missing; try \"yum install -y appliance-tools-minimizer\" to install it."
+    exit -1
+fi 
+
+#default cache dir
+CD=./cache
+
+#default drop-to-shell is disabled
+SH=""
+
+while getopts ":d:c:x:h" opt; do
+  case $opt in
+    c)
+      KS=$OPTARG
+      ;;
+    x)
+      SH="--shell"
+      ;;
+    d)
+      CD=$OPTARG
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2  
+      usage
+      exit -1
+      ;;
+  esac
+done
+
+CMD="livecd-creator --cache=$CD --config=$KS --fslabel=Litevirt --title=Litevirt --product=Litevirt -d $SH"
+echo $CMD
+$CMD
