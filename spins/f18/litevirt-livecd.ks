@@ -618,6 +618,8 @@ drop /usr/sbin/rpc.nfsd
 drop /usr/sbin/rpc.svcgssd
 drop /usr/sbin/rpcdebug
 
+#runtime packages required by livecd-creator;
+#they can be safely removed in the postscript
 droprpm firewalld
 droprpm appliance-tools-minimizer
 %end
@@ -700,6 +702,10 @@ plymouth-theme-charge
 libvirt-python
 firewalld
 augeas
+
+# extremely lightweight web service packages
+lighttpd
+python-webpy
 
 -audit-libs-python
 -authconfig

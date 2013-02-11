@@ -1,1 +1,15 @@
-Litevirt is a lightweight hypervisor based on Fedora;
+Litevirt is a lightweight KVM-X86 hypervisor, which aims to:
+
+1. Small footprint
+
+2. High performance
+
+3. Self manageable
+
+4. Competetive features
+
+5. Easy & stateless deployment
+
+6. Low maintenance cost
+
+7. Standardized API
