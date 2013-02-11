@@ -80,7 +80,7 @@ selinux --disabled
 logging --level=info
 
 # System services
-services --enabled="snmpd,libvirtd,multipathd,sshd"
+services --enabled="snmpd,libvirtd,multipathd,sshd,openvswitch,lighttpd"
 services --disabled="ip6tables"
 # System timezone
 timezone --isUtc UTC
