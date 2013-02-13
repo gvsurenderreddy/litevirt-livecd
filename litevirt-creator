@@ -50,6 +50,6 @@ while getopts ":d:c:x:h" opt; do
   esac
 done
 
-CMD="livecd-creator --cache=$CD --config=$KS --fslabel=Litevirt --title=Litevirt --product=Litevirt -d $SH"
+CMD="livecd-creator --cache=$CD --config=$KS --fslabel=litevirt --title=litevirt --product=litevirt -d $SH"
 echo $CMD
 $CMD

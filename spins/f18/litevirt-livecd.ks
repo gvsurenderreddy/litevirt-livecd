@@ -1,3 +1,8 @@
+%include litevirt-networking.ks
+%include litevirt-agent.ks
+#%include litevirt-config.ks
+#%include litevirt-qemu-kvm.ks
+
 firewall --disabled
 
 repo --name="fedora" --mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch
@@ -80,8 +85,8 @@ selinux --disabled
 logging --level=info
 
 # System services
-services --enabled="snmpd,libvirtd,multipathd,sshd,openvswitch,lighttpd"
-services --disabled="ip6tables"
+services --enabled="rsyslog,libvirtd,multipathd"
+
 # System timezone
 timezone --isUtc UTC
 # System bootloader configuration
@@ -96,13 +101,6 @@ export PATH
 
 echo "Refine crond service"
 rm -f /etc/cron.daily/logrotate
-
-echo "Initialize snmp service"
-cat > /etc/snmp/snmpd.conf << \EOF_snmpd
-master agentx
-dontLogTCPWrappersConnects yes
-rwuser root auth .1
-EOF_snmpd
 
 echo "Strip out all unncesssary locales"
 localedef --list-archive | grep -v -i -E 'en_US.utf8' |xargs localedef --delete-from-archive
@@ -128,10 +126,6 @@ passwd -d root
 echo "Disable selinux"
 [ -f /etc/selinux/config ] && sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 
-echo "Configure sshd service"
-mkdir -p /root/.ssh
-chmod 700 /root/.ssh
-
 # make sure we don't autostart virbr0 on libvirtd startup
 rm -f /etc/libvirt/qemu/networks/autostart/default.xml
 
@@ -154,19 +148,7 @@ EOF_bashrc
 # fix iSCSI/LVM startup issue
 sed -i 's/node\.session\.initial_login_retry_max.*/node.session.initial_login_retry_max = 60/' /etc/iscsi/iscsid.conf
 
-# use static RPC ports, to avoid collisions
-augtool << \EOF_nfs
-set /files/etc/sysconfig/nfs/RQUOTAD_PORT 875
-set /files/etc/sysconfig/nfs/LOCKD_TCPPORT 32803
-set /files/etc/sysconfig/nfs/LOCKD_UDPPORT 32769
-set /files/etc/sysconfig/nfs/MOUNTD_PORT 892
-set /files/etc/sysconfig/nfs/STATD_PORT 662
-set /files/etc/sysconfig/nfs/STATD_OUTGOING_PORT 2020
-save
-EOF_nfs
-
-
-echo "Creating sysctl.conf"
+echo "Initializing sysctl.conf"
 cat > /etc/sysctl.conf  <<EOF
 kernel.sched_min_granularity_ns = 10000000
 kernel.sched_wakeup_granularity_ns = 15000000
@@ -261,7 +243,6 @@ droprpm make
 droprpm setools-libs-python
 droprpm setools-libs
 
-droprpm gamin
 droprpm pm-utils
 droprpm usermode
 droprpm vbetool
@@ -585,7 +566,6 @@ droprpm openslp
 droprpm ConsoleKit
 droprpm checkpolicy
 droprpm dmraid-events
-droprpm gamin
 droprpm gnupg2
 droprpm hdparm
 droprpm isomd5sum
@@ -641,40 +621,30 @@ fi
 
 
 %packages --excludedocs --nobase
-PyPAM
-acpid
 aic94xx-firmware
-audit
 bfa-firmware
 db4
 device-mapper-multipath
 dhclient
 dmraid
 e2fsprogs
-openvswitch
-ethtool
 appliance-tools-minimizer
 system-config-keyboard-base
 iscsi-initiator-utils
 file
 hostname
-hdparm
 hwdata
 irqbalance
 kernel
 perf
 lsof
 lsscsi
-net-snmp
-newt-python
 numactl
 openssh-clients
-openssh-server
 passwd
 pciutils
 psmisc
 python
-python-gudev
 python-libs
 qemu-kvm
 libvirt
@@ -689,8 +659,6 @@ sysstat
 tcpdump
 usbutils
 vim-minimal
-syslinux
-syslinux-extlinux
 bash
 plymouth
 plymouth-graphics-libs
@@ -699,13 +667,10 @@ plymouth-plugin-two-step
 plymouth-scripts
 plymouth-system-theme
 plymouth-theme-charge
-libvirt-python
 firewalld
 augeas
-
-# extremely lightweight web service packages
-lighttpd
-python-webpy
+net-tools
+rsyslog
 
 -audit-libs-python
 -authconfig
