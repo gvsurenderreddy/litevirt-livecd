@@ -48,7 +48,7 @@ fastcgi.server = ( "/server.py" =>
   ((
       "socket" => "/tmp/fastcgi.socket",
       "bin-path" => server_root + "/litevirt/server.py",
-      "max-procs" => 1,
+      "max-procs" => 5,
       "bin-environment" => (
           "REAL_SCRIPT_NAME" => ""
      ),
@@ -57,7 +57,9 @@ fastcgi.server = ( "/server.py" =>
 )
 
 url.rewrite-once = (
-       "^/py/(.*)$" => "/server.py/$1",
+        "^/favicon.ico$" => "/static/favicon.ico",
+        "^/static/(.*)$" => "/static/$1",
+        "^/(.*)$" => "/server.py/$1",
        )
 #%end litevirt
 EOF
