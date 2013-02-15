@@ -3,6 +3,7 @@ lighttpd
 lighttpd-fastcgi
 python-webpy
 python-flup
+python-mimeparse
 gamin 
 %end
 
@@ -10,29 +11,11 @@ gamin
 echo "Enable lighttpd service"
 ln -s '/usr/lib/systemd/system/lighttpd.service' '/etc/systemd/system/multi-user.target.wants/lighttpd.service'
 
-echo "Configure litevirt webapp."
-mkdir -p /var/www/litevirt
-cat > /var/www/litevirt/server.py <<EOF
-#!/usr/bin/env python
-import web
+echo "Configure litevirt api service"
+socket_dir=/var/cache/lighttpd/sockets
+mkdir -p $socket_dir
+chmod 777 $socket_dir
 
-urls = (
-    '/(.*)', 'hello'
-)
-
-class hello:
-    def GET(self, name):
-        if not name:
-            name = 'world'
-        return 'Hello, ' + name + '!'
-
-if __name__ == "__main__":
-    app = web.application(urls, globals())
-    app.run()
-
-EOF
-
-chmod -R 755 /var/www/litevirt
 
 cat >> /etc/lighttpd/modules.conf <<EOF
 #%litevirt section
@@ -46,7 +29,7 @@ server.modules += ( "mod_rewrite" )
 
 fastcgi.server = ( "/server.py" =>
   ((
-      "socket" => "/tmp/fastcgi.socket",
+      "socket" => socket_dir + "/fastcgi.socket",
       "bin-path" => server_root + "/litevirt/server.py",
       "max-procs" => 5,
       "bin-environment" => (
@@ -59,7 +42,7 @@ fastcgi.server = ( "/server.py" =>
 url.rewrite-once = (
         "^/favicon.ico$" => "/static/favicon.ico",
         "^/static/(.*)$" => "/static/$1",
-        "^/(.*)$" => "/server.py/$1",
+        "^/api/(.*)$" => "/server.py/$1",
        )
 #%end litevirt
 EOF

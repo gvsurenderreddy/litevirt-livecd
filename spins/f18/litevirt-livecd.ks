@@ -1,5 +1,5 @@
 %include litevirt-networking.ks
-%include litevirt-agent.ks
+%include litevirt-api.ks
 #%include litevirt-qemu-kvm.ks
 #%include litevirt-libvirt.ks
 #%include litevirt-config.ks
