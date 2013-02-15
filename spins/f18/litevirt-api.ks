@@ -4,7 +4,8 @@ lighttpd-fastcgi
 python-webpy
 python-flup
 python-mimeparse
-gamin 
+gamin
+litevirt-api 
 %end
 
 %post
@@ -12,10 +13,14 @@ echo "Enable lighttpd service"
 ln -s '/usr/lib/systemd/system/lighttpd.service' '/etc/systemd/system/multi-user.target.wants/lighttpd.service'
 
 echo "Configure litevirt api service"
-socket_dir=/var/cache/lighttpd/sockets
-mkdir -p $socket_dir
-chmod 777 $socket_dir
-
+cat >> /etc/lighttpd/lighttpd.conf <<EOF
+#%litevirt section
+\$SERVER["socket"] == ":443" {
+       ssl.engine   = "enable"
+       ssl.pemfile  = "/etc/ssl/private/lighttpd.pem"
+}
+#%end litevirt
+EOF
 
 cat >> /etc/lighttpd/modules.conf <<EOF
 #%litevirt section
@@ -29,9 +34,9 @@ server.modules += ( "mod_rewrite" )
 
 fastcgi.server = ( "/server.py" =>
   ((
-      "socket" => socket_dir + "/fastcgi.socket",
+      "socket" => "/tmp/fastcgi.socket",
       "bin-path" => server_root + "/litevirt/server.py",
-      "max-procs" => 5,
+      "max-procs" => 1,
       "bin-environment" => (
           "REAL_SCRIPT_NAME" => ""
      ),
