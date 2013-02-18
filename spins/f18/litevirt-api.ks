@@ -17,7 +17,7 @@ cat >> /etc/lighttpd/lighttpd.conf <<EOF
 #%litevirt section
 \$SERVER["socket"] == ":443" {
        ssl.engine   = "enable"
-       ssl.pemfile  = "/etc/ssl/private/lighttpd.pem"
+       ssl.pemfile  = "/etc/ssl/private/lighttpd.cert"
 }
 #%end litevirt
 EOF
