@@ -243,7 +243,7 @@ droprpm checkpolicy
 droprpm make
 droprpm setools-libs-python
 droprpm setools-libs
-
+droprpm gamin
 droprpm pm-utils
 droprpm usermode
 droprpm vbetool
