@@ -6,7 +6,8 @@ usage() {
     echo ""
     echo "-c    kickstart config file tied to this livecd"
     echo "-x    drop to the shell before quitting"
-    echo "-d    cache dir, default is \$CWD/cache"
+    echo "-d    cache dir; default is \$CWD/cache"
+    echo "-l    product label; default is litevirt"
 
     exit
 }
