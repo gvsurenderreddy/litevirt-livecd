@@ -640,7 +640,6 @@ perf
 lsof
 lsscsi
 numactl
-openssh-server
 openssh-clients
 passwd
 pciutils
