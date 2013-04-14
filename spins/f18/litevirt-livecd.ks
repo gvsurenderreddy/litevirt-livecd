@@ -85,7 +85,7 @@ selinux --disabled
 logging --level=info
 
 # System services
-services --enabled="rsyslog,libvirtd,multipathd"
+services --enabled="rsyslog,multipathd"
 
 # System timezone
 timezone --isUtc UTC
@@ -640,14 +640,13 @@ perf
 lsof
 lsscsi
 numactl
+openssh-server
 openssh-clients
 passwd
 pciutils
 psmisc
 python
 python-libs
-qemu-kvm
-libvirt
 linux-firmware
 ql2400-firmware
 ql2500-firmware
