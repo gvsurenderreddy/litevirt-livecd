@@ -76,6 +76,12 @@ device ums-usbat
 device ums-datafab
 device ums-eneub6250
 
+%post --nochroot
+echo "Add install helper script to livecd"
+cp helpers/bos-install.py $INSTALL_ROOT/usr/sbin/bos-install
+chmod +x $INSTALL_ROOT/usr/sbin/bos-install
+%end
+
 %packages
 aic94xx-firmware
 bfa-firmware
