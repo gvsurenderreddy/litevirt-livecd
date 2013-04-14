@@ -1,3 +1,12 @@
 #!/bin/bash
 
+[ -f $1 ] || exit -1
+
+[ -f /usr/bin/qemu-kvm ] || exit -1
+
+echo "Launching livecd vm; to visit it, connect it via spice as follows:"
+echo
+echo "   spicy -h localhost -p 6000" 
+
+/usr/bin/qemu-kvm -cpu host -enable-kvm -m 1024 -smp 2 -drive file=$1  -vga qxl -spice port=6000,disable-ticketing
 
