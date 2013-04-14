@@ -4,10 +4,10 @@ usage() {
     echo "Usage: litevirt-creator [OPTION]..."
     echo "Create a litevirt hypervisor livecd"
     echo ""
-    echo "-c    kickstart config file tied to this livecd"
-    echo "-x    drop to the shell before quitting"
-    echo "-d    cache dir; default is \$CWD/cache"
-    echo "-l    product label; default is litevirt"
+    echo "-c    kickstart config file tied to this livecd."
+    echo "-x    drop to the shell before quitting."
+    echo "-d    cache dir; default is /var/tmp/litevirt-cache."
+    echo "-l    product label; default is litevirt."
 
     exit
 }
@@ -23,7 +23,8 @@ if [ ! -f /bin/image-minimizer ]; then
 fi 
 
 #default cache dir
-CD=./cache
+CD=/var/tmp/litevirt-cache
+[ -d $CD ] || mkdir -p $CD
 
 #default drop-to-shell is disabled
 SH=""
