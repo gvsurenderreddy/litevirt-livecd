@@ -27,7 +27,10 @@ CD=./cache
 #default drop-to-shell is disabled
 SH=""
 
-while getopts ":d:c:x:h" opt; do
+#default label
+LB=litevirt
+
+while getopts ":d:c:l:x:h" opt; do
   case $opt in
     c)
       KS=$OPTARG
@@ -37,6 +40,9 @@ while getopts ":d:c:x:h" opt; do
       ;;
     d)
       CD=$OPTARG
+      ;;
+    l)
+      LB=$OPTARG
       ;;
     h)
       usage
@@ -50,6 +56,6 @@ while getopts ":d:c:x:h" opt; do
   esac
 done
 
-CMD="livecd-creator --cache=$CD --config=$KS --fslabel=litevirt --title=litevirt --product=litevirt -d $SH"
+CMD="livecd-creator --cache=$CD --config=$KS --fslabel=$LB --title=$LB --product=$LB -d $SH"
 echo $CMD
 $CMD
