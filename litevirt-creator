@@ -31,7 +31,7 @@ SH=""
 #default label
 LB=litevirt
 
-while getopts ":d:c:l:x:h" opt; do
+while getopts ":d:c:l:hx" opt; do
   case $opt in
     c)
       KS=$OPTARG
