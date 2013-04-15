@@ -145,13 +145,8 @@ yum
 -newt
 -prelink
 -setserial
--tar
--cpio
--parted
--kpartx
 -usermode
 -ustr
--which
 -dracut
 -wireless-tools
 
