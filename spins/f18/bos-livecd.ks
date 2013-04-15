@@ -7,8 +7,8 @@ firewall --disabled
 part / --size 4096
 services --enabled="openvswitch,network,sshd"
 
-repo --name=f18 --baseurl=http://mirrors.163.com/fedora/releases/$releasever/Everything/$basearch/os/
-repo --name=f18-update --baseurl=http://mirrors.163.com/fedora/updates/$releasever/$basearch/
+repo --name=f18 --baseurl=http://186.100.8.145/repo/fedora/linux/releases/$releasever/Everything/$basearch/os/
+repo --name=f18-update --baseurl=http://186.100.8.145/repo/fedora/linux/updates/$releasever/$basearch/
 
 device virtio_blk
 device virtio_pci
