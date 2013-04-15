@@ -5,8 +5,8 @@
 
 firewall --disabled
 
-repo --name="fedora" --mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch
-repo --name="fedora-updates" --mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=updates-released-f$releasever&arch=$basearch
+repo --name=f18 --baseurl=http://186.100.8.145/repo/fedora/linux/releases/$releasever/Everything/$basearch/os/
+repo --name=f18-update --baseurl=http://186.100.8.145/repo/fedora/linux/updates/$releasever/$basearch/
 
 device virtio_blk
 device virtio_pci
@@ -669,6 +669,7 @@ firewalld
 augeas
 net-tools
 rsyslog
+yum
 
 -audit-libs-python
 -authconfig
@@ -690,5 +691,4 @@ rsyslog
 -which
 -dracut
 -wireless-tools
--yum-metadata-parser
 %end
