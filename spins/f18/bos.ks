@@ -4,7 +4,7 @@ timezone US/Eastern
 auth --useshadow --enablemd5
 selinux --disabled
 firewall --disabled
-part / --size 4096
+part / --size 2048
 services --enabled="openvswitch,network,sshd"
 
 repo --name=f18 --baseurl=http://mirrors.163.com/fedora/releases/$releasever/Everything/$basearch/os/
@@ -80,6 +80,13 @@ device ums-eneub6250
 echo "Add install helper script to livecd"
 cp helpers/bos-install.py $INSTALL_ROOT/usr/sbin/bos-install
 chmod +x $INSTALL_ROOT/usr/sbin/bos-install
+%end
+
+%post
+echo "Strip out all unncesssary locales"
+localedef --list-archive | grep -v -i -E 'en_US.utf8' |xargs localedef --delete-from-archive
+mv /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
+/usr/sbin/build-locale-archive
 %end
 
 %packages
