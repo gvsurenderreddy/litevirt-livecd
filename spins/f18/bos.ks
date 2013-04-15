@@ -134,6 +134,7 @@ plymouth-system-theme
 plymouth-theme-charge
 net-tools
 rsyslog
+parted
 yum
 
 -audit-libs-python
