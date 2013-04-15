@@ -4,7 +4,7 @@ timezone US/Eastern
 auth --useshadow --enablemd5
 selinux --disabled
 firewall --disabled
-part / --size 2048
+part / --size 4096
 services --enabled="openvswitch,network,sshd"
 
 repo --name=f18 --baseurl=http://mirrors.163.com/fedora/releases/$releasever/Everything/$basearch/os/
