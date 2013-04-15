@@ -3,34 +3,37 @@
 import argparse
 import os
 import sys
-from LitevirtConfig.litevirtfunctions import *
+import subprocess
 
-def fatal(errmsg, errcode=-1):
-        print errormsg
-        sys.exit(errcode)
+def runcmd(cmd):
+    proc = subprocess.Popen(cmd,
+                     shell=True,
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT)
+    stdout = proc.stdout.read()
+    retval = proc.wait()
+    return (retval, stdout)
 
-class LitevirtInstaller(object):
+
+class BosInstaller(object):
     def __init__(self, args):
         self.drive = args.drive
         self.quiet = args.quiet
-        self.rootdev_idx = 1
-        self.rootdev = "%s%d" % (self.drive, self.rootdev_idx)
-        self.mntdir = "/tmp/install_stage"
-        if not os.path.exists(self.mntdir):
-            os.makedirs(self.mntdir)
-        self.release_file = "/etc/litevirt-hypervisor-release"
+        self.rootidx = 1
+        self.rootdev = "%s%d" % (self.drive, self.rootidx)
+        self.mntdir = "/var/tmp/bos_install_staging"
         self.bootdir = "%s/boot" % self.mntdir
+        if not os.path.exists(self.bootdir):
+            os.makedirs(self.bootdir)
 
     def validate_drive(self):
         basename = os.path.basename(self.drive)
         if not os.path.exists("/sys/block/%s" % basename):
-            fatal("%s is not a valid disk, which must be a local disk." % self.drive)
+            print("%s is not a valid disk." % self.drive)
+            sys.exit(-1)
+
         return
 
-    def validate_litevirt_hypervisor(self):
-        if not os.path.exists(self.release_file):
-            fatal("This is not a litevirt hypervisor system. Exiting.")
-        return
 
     def confirm_install(self):
         answner = raw_input("WARNING: ALL data on %s will be erased. Continue? (y/N): " % self.drive)
@@ -49,63 +52,75 @@ class LitevirtInstaller(object):
                 if not m:
                     continue
                 index = m.groups()[0]
-                cmd = "parted -s %s rm %s" % (self.drive, index)                
-                if system_closefds(cmd) != 0:
-                    fatal("Failed to wipe off existing partitions on %s" % self.drive)
+                cmd = "parted -s %s rm %s" % (self.drive, index)
+                (rc, out) = runcmd(cmd)             
+                if rc != 0:
+                    print("Failed to wipe off existing partitions on %s" % self.drive)
+                    sys.exit(-1)
+
         self.reread_partitions()
         return
 
     def reread_partitions(self):
-        system_closefds('sync')
-        system_closefds('partprobe %s' % self.drive)
+        runcmd('sync')
+        runcmd('partprobe %s' % self.drive)
 
     def prepare_partitions(self):
-        system_closefds('parted -s %s mklabel msdos' % self.drive)
-        system_closefds('parted -s %s mkpart primary ext2 1M 1280M' % self.drive)
-        system_closefds('parted -s %s set %d boot' % (self.drive, self.rootdev_idx))
+        runcmd('parted -s %s mklabel msdos' % self.drive)
+        runcmd('parted -s %s mkpart primary ext2 1M 8192M' % self.drive)
+        runcmd('parted -s %s set %d boot' % (self.drive, self.rootidx))
         self.reread_partitions()
 
     def copy_root_image(self):
         losetup_cmd = "losetup -a |grep ext3fs.img"
-        losetup_lookup = subprocess_closefds(losetup_cmd, shell=True, stdout=PIPE, stderr=STDOUT)
-        loopdev = losetup_lookup.stdout.read().strip().split(":")[0]
-        print "Copying litevirt hypervisor root image to %s" % self.rootdev
-        ret = system_closefds('cat %s > %s' % (loopdev, self.rootdev))
-        if ret != 0:
+        (rc, losetup_lookup) = runcmd(losetup_cmd)
+        if rc != 0:
+            print("Cannot find loop device ext3fs.img")
+            sys.exit(-1)
+
+        loopdev = losetup_lookup.strip().split(":")[0]
+
+        print "Copying root image from %s to %s" % (loopdev, self.rootdev)
+        (rc, out) = runcmd('cat %s > %s' % (loopdev, self.rootdev))
+        if rc != 0:
+            print("Failed to copy image to %s: %s" % (self.rootdev, out))
             sys.exit(-1)
 
     def install_bootloader(self):
-        reqs = ("/usr/sbin/extlinux",
-                "/usr/share/syslinux/mbr.bin")
+        reqs = (
+                "/usr/sbin/extlinux",
+                "/usr/share/syslinux/mbr.bin"
+               )
 
         for req in reqs:
             if not os.path.exists(req):
-                faltal("%s is missing. Abort!")
+                print("%s is missing. Abort!")
+                sys.exit(-1)
 
-        system_closefds('cat /usr/share/syslinux/mbr.bin > %s' % self.drive)
-        blkid_cmd = "blkid -o value -s UUID %s" % self.rootdev
-        uuid_lookup = subprocess_closefds(blkid_cmd, shell=True, stdout=PIPE, stderr=STDOUT)
-        uuid = uuid_lookup.stdout.read().strip()
         extlinux_conf = "%s/extlinux.conf" % self.bootdir
 
-        system_closefds('mount %s %s' % (self.rootdev, self.mntdir))
-        system_closefds('extlinux -i %s' % self.bootdir)
-        # this is required for supporting hardware raid
-        system_closefds('extlinux --clear-once %s' % self.bootdir)
-        system_closefds('cp -rf /run/initramfs/live/isolinux/* %s' % self.bootdir)
-        system_closefds('mv %s/isolinux.cfg %s' % (self.bootdir, extlinux_conf))
-
-        sed_cmds = ("sed -i 's/live:CDLABEL=Litevirt-LiveCD/UUID=%s/' %s" % (uuid, extlinux_conf),
-                    "sed -i 's/ rootflags=ro / /' %s" % extlinux_conf,
+        runcmd('cat /usr/share/syslinux/mbr.bin > %s' % self.drive)
+        blkid_cmd = "blkid -o value -s UUID %s" % self.rootdev
+        (rc, uuid_lookup) = runcmd(blkid_cmd)
+        uuid = uuid_lookup.strip()
+        print "Setting boot to %s, UUID=%s" % (self.rootdev, uuid)
+        
+        syscmds = (
+                    "mount %s %s" % (self.rootdev, self.mntdir),
+                    "extlinux -i %s" % self.bootdir,
+                    "extlinux --clear-once %s" % self.bootdir,
+                    "cp -rf /run/initramfs/live/isolinux/* %s" % self.bootdir,
+                    "mv %s/isolinux.cfg %s" % (self.bootdir, extlinux_conf),
+                    "sed -i 's/live:CDLABEL=bos/UUID=%s/' %s" % (uuid, extlinux_conf),
                     "sed -i 's/ ro / /' %s" % extlinux_conf,
-                    "sed -i 's/ liveimg / /' %s" % extlinux_conf,
-                    )
-        for cmd in sed_cmds:
-            system_closefds(cmd)
-        system_closefds('umount %s' % self.rootdev)
+                    "sed -i 's/ rd.live.image / /' %s" % extlinux_conf,
+                    "umount %s" % self.rootdev
+                  )
+
+        for cmd in syscmds:
+            runcmd(cmd)
 
     def go(self):
-        self.validate_litevirt_hypervisor()
         self.validate_drive()
         if not self.quiet:
             self.confirm_install()
@@ -116,7 +131,7 @@ class LitevirtInstaller(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-                description='Litevirt Hypervisor Install Helper')
+                description='BOS Install Helper')
     parser.add_argument(
             '--drive',
             dest='drive',
@@ -131,8 +146,8 @@ if __name__ == "__main__":
             help='Quiet mode')
     args = parser.parse_args()
 
-    installer = LitevirtInstaller(args)
+    installer = BosInstaller(args)
     installer.go()
-    print "Litevirt Hypervisor installed successfully! Please reboot your host immediately."
+    print "Bos installed successfully! Please reboot your host immediately."
     sys.exit(0)
 
