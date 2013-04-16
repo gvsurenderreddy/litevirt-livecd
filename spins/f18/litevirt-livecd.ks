@@ -1,12 +1,12 @@
 %include litevirt-networking.ks
 %include litevirt-api.ks
-%include litevirt-virt.ks
+%include litevirt-qemu-kvm.ks
+%include litevirt-libvirt.ks
 
 firewall --disabled
 
 repo --name=f18 --baseurl=http://186.100.8.145/repo/fedora/linux/releases/$releasever/Everything/$basearch/os/
 repo --name=f18-update --baseurl=http://186.100.8.145/repo/fedora/linux/updates/$releasever/$basearch/
-repo --name=litevirt    --baseurl=http://186.100.8.132/repo/litevirt/RPMS/
 
 device virtio_blk
 device virtio_pci
