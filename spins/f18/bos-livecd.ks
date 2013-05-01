@@ -140,6 +140,8 @@ plymouth-scripts
 plymouth-system-theme
 plymouth-theme-charge
 net-tools
+acpid
+eject
 rsyslog
 parted
 yum

@@ -90,7 +90,7 @@ services --enabled="rsyslog,multipathd"
 # System timezone
 timezone --isUtc UTC
 # System bootloader configuration
-bootloader --append="rootflags=ro elevator=deadline transparent_hugepage=always quiet" --location=mbr --timeout=30
+bootloader --append="rootflags=ro elevator=deadline quiet rd_NO_LVM max_loop=256" --location=mbr --timeout=30
 # Disk partitioning information
 part / --fstype="ext2" --size=1024
 
@@ -542,10 +542,6 @@ drop /usr/bin/net-snmp-create-v3-user
 drop /usr/bin/snmpconf
 drop /usr/share/snmp/snmpconf-data
 
-#remove cracklib dict
-#drop /usr/share/cracklib
-#drop /usr/lib64/cracklib_dict.*
-
 #desktop files
 drop /etc/xdg/autostart/restorecond.desktop
 
@@ -658,18 +654,21 @@ tcpdump
 usbutils
 vim-minimal
 bash
+# plymouth stuff
 plymouth
-plymouth-graphics-libs
-plymouth-plugin-label
-plymouth-plugin-two-step
-plymouth-scripts
 plymouth-system-theme
+plymouth-plugin-label
+plymouth-graphics-libs
+plymouth-scripts
+plymouth-plugin-two-step
 plymouth-theme-charge
+
 firewalld
 augeas
 net-tools
 rsyslog
 yum
+generic-logos
 
 -audit-libs-python
 -authconfig
