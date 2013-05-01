@@ -80,6 +80,14 @@ device ums-eneub6250
 echo "Add install helper script to livecd"
 cp helpers/bos-install.py $INSTALL_ROOT/usr/sbin/bos-install
 chmod +x $INSTALL_ROOT/usr/sbin/bos-install
+
+echo "Fixing boot menu"
+# remove quiet from Node bootparams, added by livecd-creator
+sed -i -e 's/ quiet//' $LIVE_ROOT/isolinux/isolinux.cfg
+
+# Remove Verify and Boot option
+sed -i -e '/label check0/{N;N;N;d;}' $LIVE_ROOT/isolinux/isolinux.cfg
+
 %end
 
 %post
