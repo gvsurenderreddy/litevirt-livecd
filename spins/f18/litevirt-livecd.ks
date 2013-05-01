@@ -126,8 +126,6 @@ passwd -d root
 echo "Disable selinux"
 [ -f /etc/selinux/config ] && sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 
-# make sure we don't autostart virbr0 on libvirtd startup
-rm -f /etc/libvirt/qemu/networks/autostart/default.xml
 
 # remove the /etc/krb5.conf file; it will be fetched on bootup
 rm -f /etc/krb5.conf
