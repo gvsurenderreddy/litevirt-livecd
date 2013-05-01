@@ -5,11 +5,8 @@ libvirt-python
 python-gudev
 python-gudev
 hdparm
-syslinux
-syslinux-extlinux
 acpid
 net-snmp
-openssh-server
 %end
 
 %post
@@ -23,10 +20,5 @@ dontLogTCPWrappersConnects yes
 rwuser root auth .1
 EOF_snmpd
 
-echo "Enable sshd service"
-ln -s '/usr/lib/systemd/system/sshd.service' '/etc/systemd/system/multi-user.target.wants/sshd.service'
 
-echo "Configure sshd service"
-mkdir -p /root/.ssh
-chmod 700 /root/.ssh
 %end

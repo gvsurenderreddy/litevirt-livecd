@@ -85,7 +85,7 @@ selinux --disabled
 logging --level=info
 
 # System services
-services --enabled="rsyslog,multipathd"
+services --enabled="rsyslog,multipathd,sshd"
 
 # System timezone
 timezone --isUtc UTC
@@ -165,6 +165,10 @@ vm.dirty_expire_centisecs = 200
 vm.dirty_writeback_centisecs = 500
 vm.zone_reclaim_mode = 0
 EOF
+
+echo "Configure sshd service"
+mkdir -p /root/.ssh
+chmod 700 /root/.ssh
 
 %end
 
@@ -639,6 +643,9 @@ lsof
 lsscsi
 numactl
 openssh-clients
+openssh-server
+syslinux
+syslinux-extlinux
 passwd
 pciutils
 psmisc
