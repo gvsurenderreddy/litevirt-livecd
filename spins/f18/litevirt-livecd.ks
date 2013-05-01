@@ -1,12 +1,12 @@
 %include litevirt-networking.ks
-%include litevirt-api.ks
-%include litevirt-qemu-kvm.ks
-%include litevirt-libvirt.ks
+#%include litevirt-api.ks
+#%include litevirt-qemu-kvm.ks
+#%include litevirt-libvirt.ks
 
 firewall --disabled
 
-repo --name=f18 --baseurl=http://186.100.8.145/repo/fedora/linux/releases/$releasever/Everything/$basearch/os/
-repo --name=f18-update --baseurl=http://186.100.8.145/repo/fedora/linux/updates/$releasever/$basearch/
+repo --name=f18 --baseurl=http://mirrors.163.com/fedora/releases/$releasever/Everything/$basearch/os/
+repo --name=f18-update --baseurl=http://mirrors.163.com/fedora/updates/$releasever/$basearch/
 
 device virtio_blk
 device virtio_pci
@@ -199,6 +199,10 @@ EOF
 cp $LIVE_ROOT/isolinux/version $INSTALL_ROOT/etc/default/
 
 echo "Fix boot menu"
+
+# remove quiet from Node bootparams, added by livecd-creator
+sed -i -e 's/ quiet//' $LIVE_ROOT/isolinux/isolinux.cfg
+
 # Remove Verify and Boot option
 sed -i -e '/label check0/{N;N;N;d;}' $LIVE_ROOT/isolinux/isolinux.cfg
 sed -i -e '/label local/{N;N;N;d;}' $LIVE_ROOT/isolinux/isolinux.cfg
@@ -214,10 +218,10 @@ linux0==1 && $1=="append" {
 }
 linux0==1 && $1=="label" && $2!="linux0" {
   linux0=2
-  print "label Litevirt Hypervisor"
-  print "  menu label Litevirt Hypervisor"
+  print "label serial-console"
+  print "  menu label Litevirt Hypervisor with serial console"
   print "  kernel vmlinuz0"
-  print append0" nomodeset "
+  print append0" console=ttyS0,115200n8 "
 }
 { print }
 ' $LIVE_ROOT/isolinux/isolinux.cfg > $menu
