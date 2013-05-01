@@ -1,5 +1,13 @@
 #!/bin/sh
 
+COS=0
+FEDORA=0
+
+loadenv() {
+    [ -f /etc/fedora-release ] && FEDORA=1
+    [ -f /etc/centos-release ] && COS=1
+}
+
 usage() {
     echo "Usage: litevirt-creator [OPTION]..."
     echo "Create a litevirt hypervisor livecd"
@@ -12,14 +20,13 @@ usage() {
     exit
 }
 
-if [ ! -f /bin/livecd-creator ]; then
+if [ ! -f /bin/livecd-creator -a ! -f /usr/bin/livecd-creator ]; then
     echo "livecd-tools is missing; try \"yum install -y livecd-tools\" to install it."
     exit -1
 fi 
 
 if [ ! -f /bin/image-minimizer ]; then
     echo "appliance-tools-minimizer is missing; try \"yum install -y appliance-tools-minimizer\" to install it."
-    exit -1
 fi 
 
 #default cache dir
@@ -58,6 +65,13 @@ while getopts ":d:c:l:hx" opt; do
   esac
 done
 
-CMD="livecd-creator --cache=$CD --config=$KS --fslabel=$LB --title=$LB --product=$LB -d $SH"
+loadenv
+
+if [ -n $COS ]; then 
+    CMD="livecd-creator --cache=$CD --config=$KS --fslabel=$LB -d $SH"
+elif [ -n $FEDORA ]; then
+    CMD="livecd-creator --cache=$CD --config=$KS --fslabel=$LB --title=$LB --product=$LB -d $SH"
+fi
+
 echo $CMD
 $CMD
