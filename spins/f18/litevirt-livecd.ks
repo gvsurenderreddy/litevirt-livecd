@@ -175,7 +175,7 @@ chmod 700 /root/.ssh
 %post --nochroot
 PRODUCT='Litevirt Hypervisor'
 PRODUCT_SHORT='Litevirt Hypervisor'
-VERSION=0.1.0
+VERSION=1.0.0
 RELEASE=10000
 
 
