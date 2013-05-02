@@ -13,3 +13,24 @@ Litevirt is a lightweight KVM-X86 hypervisor, which aims to:
 6. Low maintenance cost
 
 7. Standardized API
+
+Build Litevirt Hypervisor LiveCD based on CentOS 6.4
+
+1. Install a host with CentOS 6.4
+
+2. Clone litevirt-livecd git repository
+
+3. Have livecd-tools installed on the host, which does not exist on CentOS 
+   repo. Please follow this link: 
+   https://projects.centos.org/trac/livecd/wiki/GetToolset
+
+4. Have appliance-tools-minimizer installed on the host, which does not 
+   exist on CentOS repo either but can be rebuilt from F18 version.
+
+5. Create a local repo that contains appliance-tools-minimizer.
+   $ createrepo /root/repo/RPMS
+
+6. Add this repo to litevirt-livecd.ks
+
+7. Create the livecd:
+   $ ./litevirt-creator -c spins/cos64/litevirt-livecd.ks
