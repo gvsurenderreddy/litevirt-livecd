@@ -82,7 +82,7 @@ selinux --disabled
 logging --level=info
 
 # System services
-services --enabled="rsyslog,multipathd"
+services --enabled="rsyslog,multipathd,sshd"
 
 # System timezone
 timezone --isUtc UTC
@@ -137,12 +137,17 @@ EOF_bashrc
 
 # fix iSCSI/LVM startup issue
 sed -i 's/node\.session\.initial_login_retry_max.*/node.session.initial_login_retry_max = 60/' /etc/iscsi/iscsid.conf
+
+echo "Configure sshd service"
+mkdir -p /root/.ssh
+chmod 700 /root/.ssh
+
 %end
 
 %post --nochroot
 PRODUCT='Litevirt Hypervisor'
 PRODUCT_SHORT='Litevirt Hypervisor'
-VERSION=0.1.0
+VERSION=1.0.0
 RELEASE=10000
 
 # overwrite user visible banners with the image versioning info
@@ -570,6 +575,14 @@ drop /usr/sbin/rpcdebug
 #they can be safely removed in the postscript
 droprpm firewalld
 droprpm appliance-tools-minimizer
+
+# COS6 only
+droprpm cvs
+droprpm gettext
+droprpm hesiod
+droprpm procmail
+droprpm sendmail
+drop /etc/rc.d/init.d/libvirt-guests
 %end
 
 %post
@@ -609,11 +622,15 @@ lsof
 lsscsi
 numactl
 openssh-clients
+openssh-server
 passwd
 pciutils
 psmisc
 python
 python-libs
+ql2100-firmware
+ql2200-firmware
+ql23xx-firmware
 ql2400-firmware
 ql2500-firmware
 rootfiles
