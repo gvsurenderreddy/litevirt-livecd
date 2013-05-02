@@ -175,8 +175,9 @@ echo "Fix boot menu"
 # remove quiet from Node bootparams, added by livecd-creator
 sed -i -e 's/ quiet//' $LIVE_ROOT/isolinux/isolinux.cfg
 
-# Rename Boot option to Install or Upgrade
+# Rename Boot option to Litevirt Hypervisor
 sed -i 's/^  menu label Boot$/  menu label Litevirt Hypervisor/' $LIVE_ROOT/isolinux/isolinux.cfg
+sed -i 's/^  menu label Boot (Basic Video)$/  menu label Litevirt Hypervisor (Basic Video)/' $LIVE_ROOT/isolinux/isolinux.cfg
 
 # Remove Verify and Boot option
 sed -i -e '/label check0/{N;N;N;d;}' $LIVE_ROOT/isolinux/isolinux.cfg
