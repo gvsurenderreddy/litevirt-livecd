@@ -87,7 +87,7 @@ services --enabled="rsyslog,multipathd,sshd"
 # System timezone
 timezone --isUtc UTC
 # System bootloader configuration
-bootloader --append="rootflags=ro elevator=deadline quiet rd_NO_LVM max_loop=256" --location=mbr --timeout=30
+bootloader --append="rootflags=ro elevator=deadline rd_NO_LVM max_loop=256" --location=mbr --timeout=30
 # Disk partitioning information
 part / --fstype="ext2" --size=1024
 
