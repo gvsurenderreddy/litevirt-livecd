@@ -613,7 +613,6 @@ appliance-tools-minimizer
 system-config-keyboard-base
 iscsi-initiator-utils
 file
-hostname
 hwdata
 irqbalance
 kernel
@@ -649,13 +648,11 @@ plymouth-plugin-label
 plymouth-graphics-libs
 plymouth-scripts
 plymouth-plugin-two-step
-plymouth-theme-charge
 
 augeas
 net-tools
 rsyslog
 yum
-generic-logos
 
 -audit-libs-python
 -authconfig
