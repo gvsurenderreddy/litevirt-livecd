@@ -172,15 +172,14 @@ EOF
 cp $LIVE_ROOT/isolinux/version $INSTALL_ROOT/etc/default/
 
 echo "Fix boot menu"
-
 # remove quiet from Node bootparams, added by livecd-creator
 sed -i -e 's/ quiet//' $LIVE_ROOT/isolinux/isolinux.cfg
 
+# Rename Boot option to Install or Upgrade
+sed -i 's/^  menu label Boot$/  menu label Litevirt Hypervisor/' $LIVE_ROOT/isolinux/isolinux.cfg
+
 # Remove Verify and Boot option
 sed -i -e '/label check0/{N;N;N;d;}' $LIVE_ROOT/isolinux/isolinux.cfg
-sed -i -e '/label local/{N;N;N;d;}' $LIVE_ROOT/isolinux/isolinux.cfg
-sed -i -e '/label returntomain/{N;N;N;d;}' $LIVE_ROOT/isolinux/isolinux.cfg
-
 
 # add serial console boot entry
 menu=$(mktemp)
