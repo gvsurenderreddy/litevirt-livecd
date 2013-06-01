@@ -27,6 +27,7 @@ fi
 
 if [ ! -f /bin/image-minimizer ]; then
     echo "appliance-tools-minimizer is missing; try \"yum install -y appliance-tools-minimizer\" to install it."
+	exit -1
 fi 
 
 #default cache dir
